@@ -8,8 +8,12 @@ IF NOT EXIST "%appdata%\GZDoom" (
 ) ELSE (
 	ECHO [33m[INFO] GZDoom folder already exists...[0m
 )
-CD "%appdata%\GZDoom"
 
+:downloads gzdoom from the internet
+ECHO [33m[INFO] Attempting gzdoom-4-14-0a-windows.zip download...[0m
+curl -L -O https://github.com/ZDoom/gzdoom/releases/download/g4.14.0/gzdoom-4-14-0a-windows.zip
+ECHO [33m[INFO] gzdoom-4-14-0a-windows.zip download complete![0m
 
+MOVE gzdoom-4-14-0a-windows.zip "%appdata%\GZDoom"
 
 PAUSE
