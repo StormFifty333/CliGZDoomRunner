@@ -1,5 +1,5 @@
 @ECHO OFF
-TITLE Uninstall GZDoom Runner Install - Kolton
+TITLE Uninstall CliGZDoomRunner Install - StormFifty333
 
 :checks if gzdoom folder exists for deletion
 IF EXIST "%appdata%\GZDoom" (
