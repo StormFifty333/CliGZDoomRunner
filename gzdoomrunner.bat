@@ -112,7 +112,7 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 
 ::this chunk of code is taken from John Gibbons on Server Fault Stack Exchange
 ::https://serverfault.com/questions/132685/batch-scripting-iterate-over-drive-letters
-::finds connected drives and outputs drive letters
+::finds connected drives and locates steam doom directory
 FOR /F "tokens=* USEBACKQ" %%F IN (`fsutil fsinfo drives`) DO (
 	SET ogdrives=%%F
 )
@@ -152,11 +152,71 @@ SET drives=!drives: =!
 
 :oloop
 
+::this part is modified to exit once directory is found
 FOR /L %%n IN (1 1 !num!) DO (
-	ECHO drive %%n is !drive%%n!
+	IF EXIST "!drive%%n!:\Program Files (x86)\Steam\steamapps\common\Ultimate Doom\base\DOOM.WAD" (
+		IF EXIST "!drive%%n!:\Program Files (x86)\Steam\steamapps\common\Ultimate Doom\base\doom2\DOOM2.WAD" (
+			SET directory="!drive%%n!:\Program Files (x86)\Steam\steamapps\common\Ultimate Doom\base"
+			GOTO directory_found
+		) ELSE (
+			IF EXIST "!drive%%n!:\SteamLibrary\steamapps\common\Ultimate Doom\base\DOOM.WAD" (
+				IF EXIST "!drive%%n!:\SteamLibrary\steamapps\common\Ultimate Doom\base\doom2\DOOM2.WAD" (
+					SET directory="!drive%%n!:\SteamLibrary\steamapps\common\Ultimate Doom\base"
+					GOTO directory_found
+				)
+			)
+		)
+	) ELSE (
+		IF EXIST "!drive%%n!:\SteamLibrary\steamapps\common\Ultimate Doom\base\DOOM.WAD" (
+			IF EXIST "!drive%%n!:\SteamLibrary\steamapps\common\Ultimate Doom\base\doom2\DOOM2.WAD" (
+				SET directory="!drive%%n!:\SteamLibrary\steamapps\common\Ultimate Doom\base"
+				GOTO directory_found
+			)
+		)
+	)
 )
 
+::this means the directory wasn't located
+GOTO directory_not_found
 
+
+:directory_found
+	ECHO [33m[INFO] Located Steam DOOM + DOOM II directory at %directory%[0m
+	
+	IF NOT EXIST "%appdata%\GZDoom\DOOM.WAD" (
+		xcopy %directory%\DOOM.WAD %appdata%\GZDoom
+	)
+	
+	IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
+		xcopy %directory%\doom2\DOOM2.WAD %appdata%\GZDoom
+	)
+	
+	GOTO download_shareware
+
+:directory_not_found
+	ECHO [33m[INFO] Steam DOOM + DOOM II installation not found ^^![0m
+	GOTO download_shareware
+
+::prompts user to download shareware wad
+:download_shareware
+	ECHO [36m[PROMPT] Would you like to download DOOM Shareware version (FREE)?[0m
+	ECHO [34m[OPTION] Yes: 1[0m
+	ECHO [34m[OPTION] No: 2[0m
+
+	SET /p "input=[32m[INPUT]: [0m"
+
+	IF %input%==1 (
+		::download shareware here
+		ECHO download
+	) ELSE (
+		IF %input%==2 (
+			::continue on
+			ECHO continue
+		) ELSE (
+			ECHO [31m[ERROR] Invalid Input^^![0m
+			GOTO download_shareware
+		)
+	)
 
 ENDLOCAL
 PAUSE
