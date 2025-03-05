@@ -180,8 +180,18 @@ FOR /L %%n IN (1 1 !num!) DO (
 GOTO directory_not_found
 
 
+
 :directory_found
-	ECHO [33m[INFO] Located Steam DOOM + DOOM II directory at %directory%[0m
+	
+	IF NOT EXIST "%appdata%\GZDoom\DOOM.WAD" (
+		ECHO [33m[INFO] Located Steam DOOM + DOOM II directory at %directory%[0m
+	) ELSE (
+		IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
+			ECHO [33m[INFO] Located Steam DOOM + DOOM II directory at %directory%[0m
+		) ELSE (
+			ECHO [33m[INFO] DOOM.WAD and DOOM2.WAD found in %appdata%\GZDoom[0m
+		)
+	)
 	
 	IF NOT EXIST "%appdata%\GZDoom\DOOM.WAD" (
 		xcopy %directory%\DOOM.WAD %appdata%\GZDoom
@@ -194,7 +204,13 @@ GOTO directory_not_found
 	GOTO download_shareware
 
 :directory_not_found
-	ECHO [33m[INFO] Steam DOOM + DOOM II installation not found ^^![0m
+
+	IF NOT EXIST "%appdata%\GZDoom\DOOM.WAD" (
+		IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
+			ECHO [33m[INFO] Steam DOOM + DOOM II installation not found^^! You can manually install DOOM.WAD and DOOM2.WAD into %appdata%\GZDoom[0m
+		)
+	)
+
 	GOTO download_shareware
 
 ::prompts user to download shareware wad
