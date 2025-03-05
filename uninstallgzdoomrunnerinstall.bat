@@ -1,7 +1,7 @@
 @ECHO OFF
 TITLE Uninstall CliGZDoomRunner Install - StormFifty333
 
-:checks if gzdoom folder exists for deletion
+::checks if gzdoom folder exists for deletion
 IF EXIST "%appdata%\GZDoom" (
 	RMDIR /S /Q "%appdata%\GZDoom"
 	ECHO [33m[INFO] GZDoom folder removed.[0m
