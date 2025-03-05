@@ -58,7 +58,12 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 		::downloads and applies my config
 		ECHO [33m[INFO] Attempting StormFifty333's Config download from https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/gzdoom_portable.ini ...[0m
 		curl -L -o "%appdata%\GZDoom\gzdoom_portable.ini" https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/stormfifty333config.ini
-		ECHO [33m[INFO] Config download complete^^![0m
+		IF EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
+			ECHO [33m[INFO] Config download complete^^![0m
+		) ELSE (
+			ECHO [31m[ERROR] Config not found^^! Download possibly failed or file lost...[0m
+			goto prompt_config
+		)
 		
 		GOTO :pass_config_prompts
 	) ELSE (
@@ -66,7 +71,12 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 			::downloads and applies the default config
 			ECHO [33m[INFO] Attempting Default Config download from https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/defaultconfig.ini ...[0m
 			curl -L -o "%appdata%\GZDoom\gzdoom_portable.ini" https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/defaultconfig.ini
-			ECHO [33m[INFO] Config download complete^^![0m
+			IF EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
+				ECHO [33m[INFO] Config download complete^^![0m
+			) ELSE (
+				ECHO [31m[ERROR] Config not found^^! Download possibly failed or file lost...[0m
+				GOTO prompt_config
+			)
 			
 			GOTO pass_config_prompts
 		) ELSE (
