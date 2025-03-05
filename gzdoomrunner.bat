@@ -17,27 +17,27 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom.exe" (
 	IF NOT EXIST "%appdata%\GZDoom\gzdoom-4-14-0a-windows.zip" (
 		ECHO [33m[INFO] Attempting GZDoom download from https://github.com/ZDoom/gzdoom/releases/download/g4.14.0/gzdoom-4-14-0a-windows.zip...[0m
 		curl -L -O https://github.com/ZDoom/gzdoom/releases/download/g4.14.0/gzdoom-4-14-0a-windows.zip
-		ECHO [33m[INFO] GZDoom download complete![0m
+		ECHO [33m[INFO] GZDoom download complete^^![0m
 		MOVE gzdoom-4-14-0a-windows.zip "%appdata%\GZDoom"
 	) ELSE (
-		ECHO [33m[INFO] gzdoom-4-14-0a-windows.zip already exists![0m
+		ECHO [33m[INFO] gzdoom-4-14-0a-windows.zip already exists^^![0m
 	)
 	
 	::extracts gzdoom zip
 	IF EXIST "%appdata%\GZDoom\gzdoom-4-14-0a-windows.zip" (
 		ECHO [33m[INFO] Beginning to extract gzdoom-4-14-0a-windows.zip...[0m
 		powershell Expand-Archive "%appdata%\GZDoom\gzdoom-4-14-0a-windows.zip" "%appdata%\GZDoom"
-		ECHO [33m[INFO] Extraction complete![0m
+		ECHO [33m[INFO] Extraction complete^^![0m
 	
 		::removes zip
 		ECHO [33m[INFO] Removing gzdoom-4-14-0a-windows.zip...[0m
 		DEL "%appdata%\GZDoom\gzdoom-4-14-0a-windows.zip"
 	) ELSE (
-		ECHO [31m[ERROR] Zip not found! Download possibly failed or file lost...[0m
+		ECHO [31m[ERROR] Zip not found^^! Download possibly failed or file lost...[0m
 	)
 	
 ) ELSE (
-	ECHO [33m[INFO] Existing install found! No corruption free guarantee![0m
+	ECHO [33m[INFO] Existing install found^^! No corruption free guarantee^^![0m
 )
 
 IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
@@ -58,7 +58,7 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 		::downloads and applies my config
 		ECHO [33m[INFO] Attempting StormFifty333's Config download from https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/gzdoom_portable.ini ...[0m
 		curl -L -o "%appdata%\GZDoom\gzdoom_portable.ini" https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/stormfifty333config.ini
-		ECHO [33m[INFO] Config download complete![0m
+		ECHO [33m[INFO] Config download complete^^![0m
 		
 		GOTO :pass_config_prompts
 	) ELSE (
@@ -66,11 +66,11 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 			::downloads and applies the default config
 			ECHO [33m[INFO] Attempting Default Config download from https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/defaultconfig.ini ...[0m
 			curl -L -o "%appdata%\GZDoom\gzdoom_portable.ini" https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/defaultconfig.ini
-			ECHO [33m[INFO] Config download complete![0m
+			ECHO [33m[INFO] Config download complete^^![0m
 			
 			GOTO pass_config_prompts
 		) ELSE (
-			ECHO [31m[ERROR] Invalid Input![0m
+			ECHO [31m[ERROR] Invalid Input^^![0m
 			GOTO prompt_config
 		)
 	)
@@ -78,7 +78,7 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 
 ::prompts user to use previous or new config
 :prompt_new_config
-	ECHO [36m[PROMPT] Previous config found! Replace?[0m
+	ECHO [36m[PROMPT] Previous config found^^! Replace?[0m
 	ECHO [34m[OPTION] Keep config: 1[0m
 	ECHO [34m[OPTION] Replace config: 2[0m
 
@@ -92,7 +92,7 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 			::moves to promt_config
 			GOTO prompt_config
 		) ELSE (
-			ECHO [31m[ERROR] Invalid Input![0m
+			ECHO [31m[ERROR] Invalid Input^^![0m
 			GOTO prompt_new_config
 		)
 	)
