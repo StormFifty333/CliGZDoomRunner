@@ -1,5 +1,5 @@
 @ECHO OFF
-TITLE GZDoom Runner - Kolton
+TITLE CliGZDoomRunner - StormFifty333
 
 :checks if gzdoom folder already exists and creates one if not
 IF NOT EXIST "%appdata%\GZDoom" (
