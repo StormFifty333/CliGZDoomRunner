@@ -48,8 +48,10 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom.exe" (
 	SET /p "input=[32m[INPUT]: [0m"
 
 	IF %input%==1 (
-		::download and apply config here
-		ECHO [33m[INFO] Attempting download from ...[0m
+		::downloads and applies my config
+		ECHO [33m[INFO] Attempting download from https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/gzdoom_portable.ini ...[0m
+		curl -L -o "%appdata%\GZDoom\gzdoom_portable.ini" https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/stormfifty333config.ini
+		ECHO [33m[INFO] gzdoom_portable.ini download complete![0m
 	) ELSE (
 		IF %input%==2 (
 			ECHO 2
