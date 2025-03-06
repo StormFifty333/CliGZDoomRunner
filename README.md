@@ -5,17 +5,15 @@ How to start:
 
 Right click windows logo and select Terminal
 
-Copy and Paste all three of these commands into the terminal and enter
+Copy and Paste this single line of 3 commands
 
 ```
-curl -o gzdoomrunner.bat https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/gzdoomrunner.bat
-.\gzdoomrunner.bat
-rm .\gzdoomrunner.bat
+curl -o gzdoomrunner.bat https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/gzdoomrunner.bat; .\gzdoomrunner.bat; rm .\gzdoomrunner.bat
 ```
 
 If you want to start again or install run those commands again to be prompted to play again or uninstall
 
-The first line install the script
+The first command installs the script
 
 The second runs it
 
