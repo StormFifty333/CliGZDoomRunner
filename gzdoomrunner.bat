@@ -26,7 +26,7 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom.exe" (
 	::extracts gzdoom zip
 	IF EXIST "%appdata%\GZDoom\gzdoom-4-14-0a-windows.zip" (
 		ECHO [33m[INFO] Beginning to extract gzdoom-4-14-0a-windows.zip...[0m
-		powershell Expand-Archive "%appdata%\GZDoom\gzdoom-4-14-0a-windows.zip" "%appdata%\GZDoom"
+		powershell Expand-Archive -F "%appdata%\GZDoom\gzdoom-4-14-0a-windows.zip" "%appdata%\GZDoom"
 		ECHO [33m[INFO] Extraction complete^^![0m
 	
 		::removes zip
@@ -56,7 +56,7 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 
 	IF %input%==1 (
 		::downloads and applies my config
-		ECHO [33m[INFO] Attempting StormFifty333's Config download from https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/gzdoom_portable.ini ...[0m
+		ECHO [33m[INFO] Attempting StormFifty333's Config download from https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/gzdoom_portable.ini...[0m
 		curl -L -o "%appdata%\GZDoom\gzdoom_portable.ini" https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/stormfifty333config.ini
 		IF EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 			ECHO [33m[INFO] Config download complete^^![0m
@@ -69,7 +69,7 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 	) ELSE (
 		IF %input%==2 (
 			::downloads and applies the default config
-			ECHO [33m[INFO] Attempting Default Config download from https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/defaultconfig.ini ...[0m
+			ECHO [33m[INFO] Attempting Default Config download from https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/defaultconfig.ini...[0m
 			curl -L -o "%appdata%\GZDoom\gzdoom_portable.ini" https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/defaultconfig.ini
 			IF EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 				ECHO [33m[INFO] Config download complete^^![0m
@@ -201,7 +201,11 @@ GOTO directory_not_found
 		xcopy %directory%\doom2\DOOM2.WAD %appdata%\GZDoom
 	)
 	
-	GOTO download_shareware
+	IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+		GOTO download_shareware
+	)
+	ECHO [33m[INFO] DOOM1.WAD found in %appdata%\GZDoom[0m
+	GOTO pass_shareware_prompt
 
 :directory_not_found
 
@@ -211,7 +215,11 @@ GOTO directory_not_found
 		)
 	)
 
-	GOTO download_shareware
+	IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+		GOTO download_shareware
+	)
+	ECHO [33m[INFO] DOOM1.WAD found in %appdata%\GZDoom[0m
+	GOTO pass_shareware_prompt
 
 ::prompts user to download shareware wad
 :download_shareware
@@ -222,17 +230,321 @@ GOTO directory_not_found
 	SET /p "input=[32m[INPUT]: [0m"
 
 	IF %input%==1 (
-		::download shareware here
-		ECHO download
+		::downloads shareware wad
+		ECHO [33m[INFO] Attempting DOOM Shareware download from https://github.com/StormFifty333/CliGZDoomRunner/raw/refs/heads/main/DOOM1.WAD...[0m
+		curl -L -o "%appdata%\GZDoom\DOOM1.WAD" https://github.com/StormFifty333/CliGZDoomRunner/raw/refs/heads/main/DOOM1.WAD
+		IF EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+			ECHO [33m[INFO] DOOM Shareware download complete^^![0m
+		) ELSE (
+			ECHO [31m[ERROR] DOOM Shareware not found^^! Download possibly failed or file lost...[0m
+			GOTO download_shareware
+		)
 	) ELSE (
 		IF %input%==2 (
-			::continue on
-			ECHO continue
+			GOTO pass_shareware_prompt
 		) ELSE (
 			ECHO [31m[ERROR] Invalid Input^^![0m
 			GOTO download_shareware
 		)
 	)
 
+:pass_shareware_prompt
+
+
+IF EXIST "%appdata%\GZDoom\brutalv22test4.pk3" (
+	ECHO [33m[INFO] brutalv22test4.pk3 found in %appdata%\GZDoom[0m
+	GOTO pass_brutaldoom_prompt
+)
+
+IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
+	ECHO [33m[INFO] brutalv22test4.zip found in %appdata%\GZDoom[0m
+	GOTO extract_brutaldoom
+)
+
+
+::prompts user to download brutal doom mod
+:download_brutaldoom
+	ECHO [36m[PROMPT] Would you like to download Brutal DOOM mod?[0m
+	ECHO [34m[OPTION] Yes: 1[0m
+	ECHO [34m[OPTION] No: 2[0m
+
+	SET /p "input=[32m[INPUT]: [0m"
+
+	IF %input%==1 (
+		::downloads brutal doom mod
+		ECHO [33m[INFO] Attempting Brutal DOOM download from https://www.moddb.com/downloads/mirror/265147/134/6c6d497283a7fa5b13a85c91bdb41dae/?referer=https%3A%2F%2Fwww.moddb.com%2Fmods%2Fbrutal-doom%2Fdownloads...[0m
+		ECHO [33m[INFO] This may take a moment...[0m
+		curl -L -o "%appdata%\GZDoom\brutalv22test4.zip" https://www.moddb.com/downloads/mirror/265147/134/6c6d497283a7fa5b13a85c91bdb41dae/?referer=https%3A%2F%2Fwww.moddb.com%2Fmods%2Fbrutal-doom%2Fdownloads
+		IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
+			ECHO [33m[INFO] Brutal DOOM download complete^^![0m
+		) ELSE (
+			ECHO [31m[ERROR] Brutal DOOM not found^^! Download possibly failed or file lost...[0m
+			GOTO download_brutaldoom
+		)
+	) ELSE (
+		IF %input%==2 (
+			GOTO pass_brutaldoom_prompt
+		) ELSE (
+			ECHO [31m[ERROR] Invalid Input^^![0m
+			GOTO download_brutaldoom
+		)
+	)
+
+:extract_brutaldoom
+	::extracts gzdoom zip
+	IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
+		ECHO [33m[INFO] Beginning to extract brutalv22test4.zip...[0m
+		powershell Expand-Archive -F "%appdata%\GZDoom\brutalv22test4.zip" "%appdata%\GZDoom"
+		ECHO [33m[INFO] Extraction complete^^![0m
+	
+		::removes zip
+		ECHO [33m[INFO] Removing brutalv22test4.zip...[0m
+		DEL "%appdata%\GZDoom\brutalv22test4.zip"
+		
+		GOTO pass_brutaldoom_prompt
+	) ELSE (
+		ECHO [31m[ERROR] Zip not found^^! Download possibly failed or file lost...[0m
+		GOTO download_brutaldoom
+	)
+
+
+:pass_brutaldoom_prompt
+
+
+IF EXIST "%appdata%\GZDoom\DOOM.WAD" (
+	IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
+		IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+			SET selected_wad=DOOM.WAD
+			GOTO pass_wad_select
+		) ELSE (
+			GOTO select_wad_two2
+		)
+	) ELSE (
+		IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+			GOTO select_wad_two
+		) ELSE (
+			GOTO select_wad_all
+		)
+	)
+) ELSE (
+	IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
+		IF EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+			SET selected_wad=DOOM1.WAD
+			GOTO pass_wad_select
+		) ELSE (
+			GOTO failed_wad
+		)
+	) ELSE (
+		IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+			SET selected_wad=DOOM2.WAD
+			GOTO pass_wad_select
+		) ELSE (
+			GOTO select_wad_two3
+		)
+	)
+)
+
+
+
+::prompts user to select a wad out of all options
+:select_wad_all
+	ECHO [36m[PROMPT] Which game would you like to play? (if joining multiplayer: pick same as host)[0m
+	ECHO [34m[OPTION] DOOM: 1[0m
+	ECHO [34m[OPTION] DOOM 2: 2[0m
+	ECHO [34m[OPTION] DOOM Shareware: 3[0m
+
+	SET /p "input=[32m[INPUT]: [0m"
+
+	IF %input%==1 (
+		SET selected_wad=DOOM.WAD
+		GOTO pass_wad_select
+	) ELSE (
+		IF %input%==2 (
+			SET selected_wad=DOOM2.WAD
+			GOTO pass_wad_select
+		) ELSE (
+			IF %input%==3 (
+				SET selected_wad=DOOM1.WAD
+				GOTO pass_wad_select
+			) ELSE (
+				ECHO [31m[ERROR] Invalid Input^^![0m
+				GOTO select_wad_all
+			)
+		)
+	)
+
+
+::prompts user to select a wad out of DOOM.WAD and DOOM2.WAD options
+:select_wad_two
+	ECHO [36m[PROMPT] Which game would you like to play? (if joining multiplayer: pick same as host)[0m
+	ECHO [34m[OPTION] DOOM: 1[0m
+	ECHO [34m[OPTION] DOOM 2: 2[0m
+
+	SET /p "input=[32m[INPUT]: [0m"
+
+	IF %input%==1 (
+		SET selected_wad=DOOM.WAD
+		GOTO pass_wad_select
+	) ELSE (
+		IF %input%==2 (
+			SET selected_wad=DOOM2.WAD
+			GOTO pass_wad_select
+		) ELSE (
+			ECHO [31m[ERROR] Invalid Input^^![0m
+			GOTO select_wad_two
+		)
+	)
+
+
+::prompts user to select a wad out of DOOM.WAD and DOOM1.WAD options
+:select_wad_two2
+	ECHO [36m[PROMPT] Which game would you like to play? (if joining multiplayer: pick same as host)[0m
+	ECHO [34m[OPTION] DOOM: 1[0m
+	ECHO [34m[OPTION] DOOM Shareware: 2[0m
+
+	SET /p "input=[32m[INPUT]: [0m"
+
+	IF %input%==1 (
+		SET selected_wad=DOOM.WAD
+		GOTO pass_wad_select
+	) ELSE (
+		IF %input%==2 (
+			SET selected_wad=DOOM1.WAD
+			GOTO pass_wad_select
+		) ELSE (
+			ECHO [31m[ERROR] Invalid Input^^![0m
+			GOTO select_wad_two2
+		)
+	)
+
+
+::prompts user to select a wad out of DOOM2.WAD and DOOM1.WAD options
+:select_wad_two3
+	ECHO [36m[PROMPT] Which game would you like to play? (if joining multiplayer: pick same as host)[0m
+	ECHO [34m[OPTION] DOOM 2: 1[0m
+	ECHO [34m[OPTION] DOOM Shareware: 2[0m
+
+	SET /p "input=[32m[INPUT]: [0m"
+
+	IF %input%==1 (
+		SET selected_wad=DOOM2.WAD
+		GOTO pass_wad_select
+	) ELSE (
+		IF %input%==2 (
+			SET selected_wad=DOOM1.WAD
+			GOTO pass_wad_select
+		) ELSE (
+			ECHO [31m[ERROR] Invalid Input^^![0m
+			GOTO select_wad_two3
+		)
+	)
+
+
+::if failed to find wad
+:failed_wad
+	ECHO [31m[ERROR] No WAD Found^^! Please buy DOOM + DOOM 2 on Steam, manually drag DOOM.WAD and DOOM2.WAD into %appdata%\GZDoom, or install DOOM Shareware[0m
+	GOTO download_shareware
+
+
+:pass_wad_select
+
+IF %selected_wad%==DOOM1.WAD (
+	SET mod_enabled=false
+	GOTO pass_mod_select
+)
+
+
+::prompts user to opt playing brutal doom
+:select_mod
+	ECHO [36m[PROMPT] Would you like to play Brutal DOOM? (if joining multiplayer: pick same as host)[0m
+	ECHO [34m[OPTION] Yes: 1[0m
+	ECHO [34m[OPTION] No: 2[0m
+
+	SET /p "input=[32m[INPUT]: [0m"
+
+	IF %input%==1 (
+		SET mod_enabled=true
+		SET selected_mod=brutalv22test4.pk3
+		GOTO pass_mod_select
+	) ELSE (
+		IF %input%==2 (
+			SET mod_enabled=false
+			GOTO pass_mod_select
+		) ELSE (
+			ECHO [31m[ERROR] Invalid Input^^![0m
+			GOTO select_mod
+		)
+	)
+
+:pass_mod_select
+
+ECHO %selected_wad%
+IF %mod_enabled%==true (
+	ECHO %selected_mod%
+)
+
+::prompts user to play singleplayer or multiplayer
+:select_player
+	ECHO [36m[PROMPT] Would you like to play Singleplayer or Multiplayer? (if joining multiplayer: you must type IP and PORT)[0m
+	ECHO [34m[OPTION] Singleplayer: 1[0m
+	ECHO [34m[OPTION] Multiplayer (connect only no host): 2[0m
+
+	SET /p "input=[32m[INPUT]: [0m"
+
+	IF %input%==1 (
+		SET multiplayer=false
+		GOTO pass_player
+	) ELSE (
+		IF %input%==2 (
+			SET multiplayer=true
+			GOTO enter_ip
+		) ELSE (
+			ECHO [31m[ERROR] Invalid Input^^![0m
+			GOTO select_player
+		)
+	)
+
+:enter_ip
+	SET /p "ip=[32m[INPUT] Enter Host's IP and PORT (ex: 192.168.1.1:5029): [0m"
+
+:pass_player
+
+
+::final check when player is ready to join
+:ready
+	ECHO [36m[PROMPT] Ready to play? (if joining multiplayer: host must start game first)[0m
+	ECHO [34m[OPTION] YES: 1[0m
+	ECHO [34m[OPTION] Nah: 2[0m
+
+	SET /p "input=[32m[INPUT]: [0m"
+
+	IF %input%==1 (
+		
+		IF %multiplayer%==false (
+			IF %mod_enabled%==false (
+				"%appdata%\GZDoom\gzdoom.exe" -iwad "%appdata%\GZDoom\%selected_wad%"
+			) ELSE (
+				"%appdata%\GZDoom\gzdoom.exe" -iwad "%appdata%\GZDoom\%selected_wad%" -file "%appdata%\GZDoom\%selected_mod%"
+			)
+		) ELSE (
+			IF %mod_enabled%==false (
+				"%appdata%\GZDoom\gzdoom.exe" -iwad "%appdata%\GZDoom\%selected_wad%" -join %ip%
+			) ELSE (
+				"%appdata%\GZDoom\gzdoom.exe" -iwad "%appdata%\GZDoom\%selected_wad%" -file "%appdata%\GZDoom\%selected_mod%" -join %ip%
+			)
+		)
+		
+	) ELSE (
+		IF %input%==2 (
+			GOTO pass_all
+		) ELSE (
+			ECHO [31m[ERROR] Invalid Input^^![0m
+			GOTO ready
+		)
+	)
+
+:pass_all
+
+
 ENDLOCAL
-PAUSE
+exit
