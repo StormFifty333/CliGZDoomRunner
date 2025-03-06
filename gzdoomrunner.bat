@@ -331,7 +331,7 @@ IF EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
 		
 		:loop33
 			IF EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
-				set fileee="C:\Users\jnkbi\Downloads\brutalv22test4.zip"
+				set fileee="%userprofile%\Downloads\brutalv22test4.zip"
 				FOR /F "usebackq" %%A IN ('%fileee%') DO set size=%%~zA
 			)
 		
