@@ -21,6 +21,7 @@ The second runs it
 
 The third removes script when done
 
+\
 
 Game will stay stored in %appdata%\GZDoom
 
@@ -34,6 +35,7 @@ I also wanted to experiment with batch scripting.
 
 So Windows only because that's what my friends use.
 
+\
 
 Creates folders and runs commands that will download gzdoom and automatically join games for you.
 
