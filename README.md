@@ -4,9 +4,11 @@ How to start:
 Right click windows logo and select Terminal
 Copy and Paste all three of these commands into the terminal and enter
 
+```
 curl -o gzdoomrunner.bat https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/gzdoomrunner.bat
 .\gzdoomrunner.bat
 rm .\gzdoomrunner.bat
+```
 
 If you want to start again or install run those commands again to be prompted to play again or uninstall
 
