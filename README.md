@@ -1,5 +1,20 @@
 # CliGZDoomRunner
-NOT CURRENTLY FINISHED OR FUNCTIONING!!!
+It works ok enough
+How to start:
+Right click windows logo and select Terminal
+Copy and Paste all three of these commands into the terminal and enter
+
+curl -o gzdoomrunner.bat https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/gzdoomrunner.bat
+.\gzdoomrunner.bat
+rm .\gzdoomrunner.bat
+
+If you want to start again or install run those commands again to be prompted to play again or uninstall
+
+The first line install the script
+The second runs it
+The third removes script when done
+
+Game will stay stored in %appdata%\GZDoom
 
 This is a niche command line tool to use and the only reason it is public is for my friends to use.
 I'm new to github so I won't be accepting contributions, only issues I MIGHT get around to fixing.
