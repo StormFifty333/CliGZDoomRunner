@@ -6,9 +6,38 @@ SETLOCAL enabledelayedexpansion
 IF NOT EXIST "%appdata%\GZDoom" (
 	MKDIR "%appdata%\GZDoom"
 	ECHO [33m[INFO] GZDoom folder created in %appdata%[0m
+	GOTO pass_uninstall
 ) ELSE (
 	ECHO [33m[INFO] GZDoom folder already exists at %appdata%[0m
+	GOTO prompt_uninstall_gzdoom
 )
+
+:prompt_uninstall_gzdoom
+	ECHO [36m[PROMPT] Would you like to remove Cli GZDoom Runner install? (removes game, wads, configs, and saves)[0m
+	ECHO [34m[OPTION] No: 1[0m
+	ECHO [34m[OPTION] Yes: 2[0m
+
+	SET /p "input=[32m[INPUT]: [0m"
+
+	IF %input%==1 (
+		GOTO :pass_uninstall
+	) ELSE (
+		IF %input%==2 (
+			IF EXIST "%appdata%\GZDoom" (
+				RMDIR /S /Q "%appdata%\GZDoom"
+				ECHO [33m[INFO] GZDoom folder removed.[0m
+				GOTO pass_all
+			) ELSE (
+				ECHO [33m[INFO] No GZDoom Runner Install found...[0m
+				GOTO pass_all
+			)
+		) ELSE (
+			ECHO [31m[ERROR] Invalid Input^^![0m
+			GOTO prompt_uninstall_gzdoom
+		)
+	)
+
+:pass_uninstall
 
 ::checks for existing gzdoom exe
 IF NOT EXIST "%appdata%\GZDoom\gzdoom.exe" (
@@ -194,10 +223,12 @@ GOTO directory_not_found
 	)
 	
 	IF NOT EXIST "%appdata%\GZDoom\DOOM.WAD" (
+		ECHO [33m[INFO] Copying %directory%\DOOM.WAD to %appdata%\GZDoom[0m
 		xcopy %directory%\DOOM.WAD %appdata%\GZDoom
 	)
 	
 	IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
+		ECHO [33m[INFO] Copying %directory%\doom2\DOOM2.WAD to %appdata%\GZDoom[0m
 		xcopy %directory%\doom2\DOOM2.WAD %appdata%\GZDoom
 	)
 	
@@ -212,6 +243,14 @@ GOTO directory_not_found
 	IF NOT EXIST "%appdata%\GZDoom\DOOM.WAD" (
 		IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
 			ECHO [33m[INFO] Steam DOOM + DOOM II installation not found^^! You can manually install DOOM.WAD and DOOM2.WAD into %appdata%\GZDoom[0m
+		) ELSE (
+			ECHO [33m[INFO] DOOM2.WAD found in %appdata%\GZDoom[0m
+		)
+	) ELSE (
+		IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
+			ECHO [33m[INFO] DOOM.WAD found in %appdata%\GZDoom[0m
+		) ELSE (
+			ECHO [33m[INFO] DOOM.WAD and DOOM2.WAD found in %appdata%\GZDoom[0m
 		)
 	)
 
@@ -231,8 +270,8 @@ GOTO directory_not_found
 
 	IF %input%==1 (
 		::downloads shareware wad
-		ECHO [33m[INFO] Attempting DOOM Shareware download from https://github.com/StormFifty333/CliGZDoomRunner/raw/refs/heads/main/DOOM1.WAD...[0m
-		curl -L -o "%appdata%\GZDoom\DOOM1.WAD" https://github.com/StormFifty333/CliGZDoomRunner/raw/refs/heads/main/DOOM1.WAD
+		ECHO [33m[INFO] Attempting DOOM Shareware download from https://distro.ibiblio.org/slitaz/sources/packages/d/doom1.wad...[0m
+		curl -L -o "%appdata%\GZDoom\DOOM1.WAD" https://distro.ibiblio.org/slitaz/sources/packages/d/doom1.wad
 		IF EXIST "%appdata%\GZDoom\DOOM1.WAD" (
 			ECHO [33m[INFO] DOOM Shareware download complete^^![0m
 		) ELSE (
@@ -261,7 +300,6 @@ IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
 	GOTO extract_brutaldoom
 )
 
-
 ::prompts user to download brutal doom mod
 :download_brutaldoom
 	ECHO [36m[PROMPT] Would you like to download Brutal DOOM mod?[0m
@@ -272,6 +310,9 @@ IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
 
 	IF %input%==1 (
 		::downloads brutal doom mod
+		::link isn't static so must change download method
+		::change to open moddb link and inform user to stay until downloaded
+		::search downloads folder or inform user to move zip into GZDoom directory
 		ECHO [33m[INFO] Attempting Brutal DOOM download from https://www.moddb.com/downloads/mirror/265147/134/6c6d497283a7fa5b13a85c91bdb41dae/?referer=https%3A%2F%2Fwww.moddb.com%2Fmods%2Fbrutal-doom%2Fdownloads...[0m
 		ECHO [33m[INFO] This may take a moment...[0m
 		curl -L -o "%appdata%\GZDoom\brutalv22test4.zip" https://www.moddb.com/downloads/mirror/265147/134/6c6d497283a7fa5b13a85c91bdb41dae/?referer=https%3A%2F%2Fwww.moddb.com%2Fmods%2Fbrutal-doom%2Fdownloads
@@ -314,21 +355,26 @@ IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
 IF EXIST "%appdata%\GZDoom\DOOM.WAD" (
 	IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
 		IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+			ECHO [33m[INFO] DOOM.WAD selected^^![0m
 			SET selected_wad=DOOM.WAD
 			GOTO pass_wad_select
 		) ELSE (
+			ECHO [33m[INFO] DOOM.WAD and DOOM1.WAD found^^![0m
 			GOTO select_wad_two2
 		)
 	) ELSE (
 		IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+			ECHO [33m[INFO] DOOM.WAD and DOOM2.WAD found^^![0m
 			GOTO select_wad_two
 		) ELSE (
+			ECHO [33m[INFO] DOOM.WAD, DOOM2.WAD and DOOM1.WAD found^^![0m
 			GOTO select_wad_all
 		)
 	)
 ) ELSE (
 	IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
 		IF EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+			ECHO [33m[INFO] DOOM1.WAD selected^^![0m
 			SET selected_wad=DOOM1.WAD
 			GOTO pass_wad_select
 		) ELSE (
@@ -336,9 +382,11 @@ IF EXIST "%appdata%\GZDoom\DOOM.WAD" (
 		)
 	) ELSE (
 		IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+			ECHO [33m[INFO] DOOM2.WAD selected^^![0m
 			SET selected_wad=DOOM2.WAD
 			GOTO pass_wad_select
 		) ELSE (
+			ECHO [33m[INFO] DOOM2.WAD and DOOM1.WAD found^^![0m
 			GOTO select_wad_two3
 		)
 	)
@@ -453,6 +501,11 @@ IF %selected_wad%==DOOM1.WAD (
 	GOTO pass_mod_select
 )
 
+IF NOT EXIST "%appdata%\GZDoom\brutalv22test4.pk3" (
+	SET mod_enabled=false
+	GOTO pass_mod_select
+)
+
 
 ::prompts user to opt playing brutal doom
 :select_mod
@@ -477,6 +530,7 @@ IF %selected_wad%==DOOM1.WAD (
 	)
 
 :pass_mod_select
+
 
 ECHO %selected_wad%
 IF %mod_enabled%==true (
