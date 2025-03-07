@@ -300,6 +300,12 @@ IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
 	GOTO extract_brutaldoom
 )
 
+IF EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
+	ECHO [33m[INFO] brutalv22test4.zip found in %userprofile%\Downloads[0m
+	MOVE "%userprofile%\Downloads\brutalv22test4.zip" "%appdata%\GZDoom"
+	GOTO extract_brutaldoom
+)
+
 ::prompts user to download brutal doom mod
 :download_brutaldoom
 	ECHO [36m[PROMPT] Would you like to download Brutal DOOM mod?[0m
@@ -309,18 +315,36 @@ IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
 	SET /p "input=[32m[INPUT]: [0m"
 
 	IF %input%==1 (
-		::downloads brutal doom mod
-		::link isn't static so must change download method
-		::change to open moddb link and inform user to stay until downloaded
-		::search downloads folder or inform user to move zip into GZDoom directory
-		ECHO [33m[INFO] Attempting Brutal DOOM download from https://www.moddb.com/downloads/mirror/265147/134/6c6d497283a7fa5b13a85c91bdb41dae/?referer=https%3A%2F%2Fwww.moddb.com%2Fmods%2Fbrutal-doom%2Fdownloads...[0m
-		ECHO [33m[INFO] This may take a moment...[0m
-		curl -L -o "%appdata%\GZDoom\brutalv22test4.zip" https://www.moddb.com/downloads/mirror/265147/134/6c6d497283a7fa5b13a85c91bdb41dae/?referer=https%3A%2F%2Fwww.moddb.com%2Fmods%2Fbrutal-doom%2Fdownloads
+		ECHO [33m[INFO] Attempting Brutal DOOM download from https://www.moddb.com/downloads/start/265147?referer=https%3A%2F%2Fwww.moddb.com%2Fmods%2Fbrutal-doom%2Fdownloads...[0m
+		ECHO [33m[INFO] Please wait for download to complete^^![0m
+		start https://www.moddb.com/downloads/start/265147?referer=https%3A%2F%2Fwww.moddb.com%2Fmods%2Fbrutal-doom%2Fdownloads
+		ECHO [33m[INFO] Checking %userprofile%\Downloads and %appdata%\GZDoom for brutalv22test4.zip[0m
+		
+		:loop22
+			IF NOT EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
+				IF NOT EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
+					GOTO loop22
+				) ELSE (
+					GOTO extract_brutaldoom
+				)
+			)
+		
+		:loop33
+			IF EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
+				set fileee="C:\Users\jnkbi\Downloads\brutalv22test4.zip"
+				FOR /F "usebackq" %%A IN ('%fileee%') DO set size=%%~zA
+			)
+		
+		IF "%size%"=="148502419" (
+			MOVE "%userprofile%\Downloads\brutalv22test4.zip" "%appdata%\GZDoom"
+			DEL "%userprofile%\Downloads\brutalv22test4.zip"
+		) ELSE (
+			GOTO loop33
+		)
+		
 		IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
 			ECHO [33m[INFO] Brutal DOOM download complete^^![0m
-		) ELSE (
-			ECHO [31m[ERROR] Brutal DOOM not found^^! Download possibly failed or file lost...[0m
-			GOTO download_brutaldoom
+			GOTO extract_brutaldoom
 		)
 	) ELSE (
 		IF %input%==2 (
@@ -330,6 +354,7 @@ IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
 			GOTO download_brutaldoom
 		)
 	)
+	
 
 :extract_brutaldoom
 	::extracts gzdoom zip
@@ -341,6 +366,9 @@ IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
 		::removes zip
 		ECHO [33m[INFO] Removing brutalv22test4.zip...[0m
 		DEL "%appdata%\GZDoom\brutalv22test4.zip"
+		IF EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
+			DEL "%userprofile%\Downloads\brutalv22test4.zip"
+		)
 		
 		GOTO pass_brutaldoom_prompt
 	) ELSE (
@@ -498,11 +526,13 @@ IF EXIST "%appdata%\GZDoom\DOOM.WAD" (
 
 IF %selected_wad%==DOOM1.WAD (
 	SET mod_enabled=false
+	ECHO [33m[INFO] Mods cannot be used with DOOM Shareware^^![0m
 	GOTO pass_mod_select
 )
 
 IF NOT EXIST "%appdata%\GZDoom\brutalv22test4.pk3" (
 	SET mod_enabled=false
+	ECHO [33m[INFO] Brutal DOOM not found^^![0m
 	GOTO pass_mod_select
 )
 
@@ -532,9 +562,10 @@ IF NOT EXIST "%appdata%\GZDoom\brutalv22test4.pk3" (
 :pass_mod_select
 
 
-ECHO %selected_wad%
 IF %mod_enabled%==true (
-	ECHO %selected_mod%
+	ECHO [33m[INFO] Selected %selected_wad% with %selected_mod%^^![0m
+) ELSE (
+	ECHO [33m[INFO] Selected %selected_wad%^^![0m
 )
 
 ::prompts user to play singleplayer or multiplayer
@@ -547,10 +578,12 @@ IF %mod_enabled%==true (
 
 	IF %input%==1 (
 		SET multiplayer=false
+		ECHO [33m[INFO] Playing singleplayer^^![0m
 		GOTO pass_player
 	) ELSE (
 		IF %input%==2 (
 			SET multiplayer=true
+			ECHO [33m[INFO] Playing multiplayer^^![0m
 			GOTO enter_ip
 		) ELSE (
 			ECHO [31m[ERROR] Invalid Input^^![0m
@@ -574,6 +607,8 @@ IF %mod_enabled%==true (
 
 	IF %input%==1 (
 		
+		ECHO [33m[INFO] Lets GO^^![0m
+		
 		IF %multiplayer%==false (
 			IF %mod_enabled%==false (
 				"%appdata%\GZDoom\gzdoom.exe" -iwad "%appdata%\GZDoom\%selected_wad%"
@@ -590,6 +625,7 @@ IF %mod_enabled%==true (
 		
 	) ELSE (
 		IF %input%==2 (
+			ECHO [33m[INFO] alright...[0m
 			GOTO pass_all
 		) ELSE (
 			ECHO [31m[ERROR] Invalid Input^^![0m
@@ -601,4 +637,4 @@ IF %mod_enabled%==true (
 
 
 ENDLOCAL
-exit
+EXIT
