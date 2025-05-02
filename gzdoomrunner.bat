@@ -2,6 +2,8 @@
 TITLE CliGZDoomRunner - StormFifty333
 SETLOCAL enabledelayedexpansion
 
+for /f "usebackq delims=" %%i in (`powershell -c "(Get-Item "%appdata%\GZDoom\gzdoom.exe").VersionInfo.ProductVersion"`) do set version=%%i
+
 ::checks if gzdoom folder already exists and creates one if not
 IF NOT EXIST "%appdata%\GZDoom" (
 	MKDIR "%appdata%\GZDoom"
@@ -9,8 +11,39 @@ IF NOT EXIST "%appdata%\GZDoom" (
 	GOTO pass_uninstall
 ) ELSE (
 	ECHO [33m[INFO] GZDoom folder already exists at %appdata%[0m
-	GOTO prompt_uninstall_gzdoom
+	IF EXIST "%appdata%\GZDoom\gzdoom.exe" (
+		IF NOT "%version%"=="g4.14.1" (
+			GOTO prompt_upgrade_or_uninstall
+		) ELSE (
+			GOTO prompt_uninstall_gzdoom
+		)
+	)
 )
+
+:prompt_upgrade_or_uninstall
+	::assumes version is less and offers to upgrade installation
+	ECHO [36m[PROMPT] Older GZDoom version detected! Would you like to upgrade or uninstall?[0m
+	ECHO [34m[OPTION] Upgrade: 1[0m
+	ECHO [34m[OPTION] Uninstall: 2[0m
+	ECHO [34m[OPTION] Nothing: 3[0m
+
+	SET /p "input=[32m[INPUT]: [0m"
+	
+	IF %input%==2 (
+		GOTO prompt_uninstall_gzdoom
+	) ELSE (
+		IF %input%==1 (
+			DEL "%appdata%\GZDoom\gzdoom.exe"
+			GOTO pass_uninstall 
+		) ELSE (
+			IF %input%==3 (
+				GOTO pass_uninstall
+			) ELSE (
+				ECHO [31m[ERROR] Invalid Input^^![0m
+				GOTO prompt_upgrade_or_uninstall
+			)
+		)
+	)
 
 :prompt_uninstall_gzdoom
 	ECHO [36m[PROMPT] Would you like to remove Cli GZDoom Runner install? (removes game, wads, configs, and saves)[0m
@@ -20,7 +53,7 @@ IF NOT EXIST "%appdata%\GZDoom" (
 	SET /p "input=[32m[INPUT]: [0m"
 
 	IF %input%==1 (
-		GOTO :pass_uninstall
+		GOTO pass_uninstall
 	) ELSE (
 		IF %input%==2 (
 			IF EXIST "%appdata%\GZDoom" (
@@ -43,24 +76,24 @@ IF NOT EXIST "%appdata%\GZDoom" (
 IF NOT EXIST "%appdata%\GZDoom\gzdoom.exe" (
 
 	::downloads gzdoom from the internet
-	IF NOT EXIST "%appdata%\GZDoom\gzdoom-4-14-0a-windows.zip" (
-		ECHO [33m[INFO] Attempting GZDoom download from https://github.com/ZDoom/gzdoom/releases/download/g4.14.0/gzdoom-4-14-0a-windows.zip...[0m
-		curl -L -O https://github.com/ZDoom/gzdoom/releases/download/g4.14.0/gzdoom-4-14-0a-windows.zip
+	IF NOT EXIST "%appdata%\GZDoom\gzdoom-4-14-1-windows.zip" (
+		ECHO [33m[INFO] Attempting GZDoom download from https://github.com/ZDoom/gzdoom/releases/download/g4.14.1/gzdoom-4-14-1-windows.zip...[0m
+		curl -L -O https://github.com/ZDoom/gzdoom/releases/download/g4.14.1/gzdoom-4-14-1-windows.zip
 		ECHO [33m[INFO] GZDoom download complete^^![0m
-		MOVE gzdoom-4-14-0a-windows.zip "%appdata%\GZDoom"
+		MOVE gzdoom-4-14-1-windows.zip "%appdata%\GZDoom"
 	) ELSE (
-		ECHO [33m[INFO] gzdoom-4-14-0a-windows.zip already exists^^![0m
+		ECHO [33m[INFO] gzdoom-4-14-1-windows.zip already exists^^![0m
 	)
 	
 	::extracts gzdoom zip
-	IF EXIST "%appdata%\GZDoom\gzdoom-4-14-0a-windows.zip" (
-		ECHO [33m[INFO] Beginning to extract gzdoom-4-14-0a-windows.zip...[0m
-		powershell Expand-Archive -F "%appdata%\GZDoom\gzdoom-4-14-0a-windows.zip" "%appdata%\GZDoom"
+	IF EXIST "%appdata%\GZDoom\gzdoom-4-14-1-windows.zip" (
+		ECHO [33m[INFO] Beginning to extract gzdoom-4-14-1-windows.zip...[0m
+		powershell -command "Expand-Archive -Path "%appdata%\GZDoom\gzdoom-4-14-1-windows.zip" -DestinationPath "%appdata%\GZDoom" -Force"
 		ECHO [33m[INFO] Extraction complete^^![0m
 	
 		::removes zip
-		ECHO [33m[INFO] Removing gzdoom-4-14-0a-windows.zip...[0m
-		DEL "%appdata%\GZDoom\gzdoom-4-14-0a-windows.zip"
+		ECHO [33m[INFO] Removing gzdoom-4-14-1-windows.zip...[0m
+		DEL "%appdata%\GZDoom\gzdoom-4-14-1-windows.zip"
 	) ELSE (
 		ECHO [31m[ERROR] Zip not found^^! Download possibly failed or file lost...[0m
 	)
@@ -69,10 +102,11 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom.exe" (
 	ECHO [33m[INFO] Existing install found^^! No corruption free guarantee^^![0m
 )
 
+
 IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
-	GOTO :prompt_config
+	GOTO prompt_config
 ) ELSE (
-	GOTO :prompt_new_config
+	GOTO prompt_new_config
 )
 
 ::prompts user to select config
