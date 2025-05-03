@@ -49,7 +49,7 @@ Join friends easily by being prompted to type in the ip.
 
 I try to log what it's doing but if I miss something the script is here in the repo for viewing.
 
-Uninstall script included for automatically removing the installation.
+Option to uninstall the game as well.
 
 I'll try to update the GZDoom version occasionally but right now this tool is pretty rigid.
 
