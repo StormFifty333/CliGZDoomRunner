@@ -12,7 +12,7 @@ IF NOT EXIST "%appdata%\GZDoom" (
 ) ELSE (
 	ECHO [33m[INFO] GZDoom folder already exists at %appdata%[0m
 	IF EXIST "%appdata%\GZDoom\gzdoom.exe" (
-		IF NOT "%version%"=="g4.14.1" (
+		IF NOT "%version%"=="g4.14.2-m" (
 			GOTO prompt_upgrade_or_uninstall
 		) ELSE (
 			GOTO prompt_uninstall_gzdoom
@@ -76,24 +76,24 @@ IF NOT EXIST "%appdata%\GZDoom" (
 IF NOT EXIST "%appdata%\GZDoom\gzdoom.exe" (
 
 	::downloads gzdoom from the internet
-	IF NOT EXIST "%appdata%\GZDoom\gzdoom-4-14-1-windows.zip" (
-		ECHO [33m[INFO] Attempting GZDoom download from https://github.com/ZDoom/gzdoom/releases/download/g4.14.1/gzdoom-4-14-1-windows.zip...[0m
-		curl -L -O https://github.com/ZDoom/gzdoom/releases/download/g4.14.1/gzdoom-4-14-1-windows.zip
+	IF NOT EXIST "%appdata%\GZDoom\gzdoom-4-14-2-windows.zip" (
+		ECHO [33m[INFO] Attempting GZDoom download from https://github.com/ZDoom/gzdoom/releases/download/g4.14.2/gzdoom-4-14-2-windows.zip...[0m
+		curl -L -O https://github.com/ZDoom/gzdoom/releases/download/g4.14.2/gzdoom-4-14-2-windows.zip
 		ECHO [33m[INFO] GZDoom download complete^^![0m
-		MOVE gzdoom-4-14-1-windows.zip "%appdata%\GZDoom"
+		MOVE gzdoom-4-14-2-windows.zip "%appdata%\GZDoom"
 	) ELSE (
-		ECHO [33m[INFO] gzdoom-4-14-1-windows.zip already exists^^![0m
+		ECHO [33m[INFO] gzdoom-4-14-2-windows.zip already exists^^![0m
 	)
 	
 	::extracts gzdoom zip
-	IF EXIST "%appdata%\GZDoom\gzdoom-4-14-1-windows.zip" (
-		ECHO [33m[INFO] Beginning to extract gzdoom-4-14-1-windows.zip...[0m
-		powershell -command "Expand-Archive -Path "%appdata%\GZDoom\gzdoom-4-14-1-windows.zip" -DestinationPath "%appdata%\GZDoom" -Force"
+	IF EXIST "%appdata%\GZDoom\gzdoom-4-14-2-windows.zip" (
+		ECHO [33m[INFO] Beginning to extract gzdoom-4-14-2-windows.zip...[0m
+		powershell -command "Expand-Archive -Path "%appdata%\GZDoom\gzdoom-4-14-2-windows.zip" -DestinationPath "%appdata%\GZDoom" -Force"
 		ECHO [33m[INFO] Extraction complete^^![0m
 	
 		::removes zip
-		ECHO [33m[INFO] Removing gzdoom-4-14-1-windows.zip...[0m
-		DEL "%appdata%\GZDoom\gzdoom-4-14-1-windows.zip"
+		ECHO [33m[INFO] Removing gzdoom-4-14-2-windows.zip...[0m
+		DEL "%appdata%\GZDoom\gzdoom-4-14-2-windows.zip"
 	) ELSE (
 		ECHO [31m[ERROR] Zip not found^^! Download possibly failed or file lost...[0m
 	)
