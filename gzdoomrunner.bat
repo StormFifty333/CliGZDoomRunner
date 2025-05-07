@@ -2,16 +2,20 @@
 TITLE CliGZDoomRunner - StormFifty333
 SETLOCAL enabledelayedexpansion
 
-for /f "usebackq delims=" %%i in (`powershell -c "(Get-Item "%appdata%\GZDoom\gzdoom.exe").VersionInfo.ProductVersion"`) do set version=%%i
+IF EXIST "%appdata%\GZDoom" (
+	MOVE "%appdata%\GZDoom" "%localappdata%"
+)
+
+for /f "usebackq delims=" %%i in (`powershell -c "(Get-Item "%localappdata%\GZDoom\gzdoom.exe").VersionInfo.ProductVersion"`) do set version=%%i
 
 ::checks if gzdoom folder already exists and creates one if not
-IF NOT EXIST "%appdata%\GZDoom" (
-	MKDIR "%appdata%\GZDoom"
-	ECHO [33m[INFO] GZDoom folder created in %appdata%[0m
+IF NOT EXIST "%localappdata%\GZDoom" (
+	MKDIR "%localappdata%\GZDoom"
+	ECHO [33m[INFO] GZDoom folder created in %localappdata%[0m
 	GOTO pass_uninstall
 ) ELSE (
-	ECHO [33m[INFO] GZDoom folder already exists at %appdata%[0m
-	IF EXIST "%appdata%\GZDoom\gzdoom.exe" (
+	ECHO [33m[INFO] GZDoom folder already exists at %localappdata%[0m
+	IF EXIST "%localappdata%\GZDoom\gzdoom.exe" (
 		IF NOT "%version%"=="g4.14.2-m" (
 			GOTO prompt_upgrade_or_uninstall
 		) ELSE (
@@ -33,7 +37,7 @@ IF NOT EXIST "%appdata%\GZDoom" (
 		GOTO prompt_uninstall_gzdoom
 	) ELSE (
 		IF %input%==1 (
-			DEL "%appdata%\GZDoom\gzdoom.exe"
+			DEL "%localappdata%\GZDoom\gzdoom.exe"
 			GOTO pass_uninstall 
 		) ELSE (
 			IF %input%==3 (
@@ -56,8 +60,8 @@ IF NOT EXIST "%appdata%\GZDoom" (
 		GOTO pass_uninstall
 	) ELSE (
 		IF %input%==2 (
-			IF EXIST "%appdata%\GZDoom" (
-				RMDIR /S /Q "%appdata%\GZDoom"
+			IF EXIST "%localappdata%\GZDoom" (
+				RMDIR /S /Q "%localappdata%\GZDoom"
 				ECHO [33m[INFO] GZDoom folder removed.[0m
 				GOTO pass_all
 			) ELSE (
@@ -73,27 +77,27 @@ IF NOT EXIST "%appdata%\GZDoom" (
 :pass_uninstall
 
 ::checks for existing gzdoom exe
-IF NOT EXIST "%appdata%\GZDoom\gzdoom.exe" (
+IF NOT EXIST "%localappdata%\GZDoom\gzdoom.exe" (
 
 	::downloads gzdoom from the internet
-	IF NOT EXIST "%appdata%\GZDoom\gzdoom-4-14-2-windows.zip" (
+	IF NOT EXIST "%localappdata%\GZDoom\gzdoom-4-14-2-windows.zip" (
 		ECHO [33m[INFO] Attempting GZDoom download from https://github.com/ZDoom/gzdoom/releases/download/g4.14.2/gzdoom-4-14-2-windows.zip...[0m
 		curl -L -O https://github.com/ZDoom/gzdoom/releases/download/g4.14.2/gzdoom-4-14-2-windows.zip
 		ECHO [33m[INFO] GZDoom download complete^^![0m
-		MOVE gzdoom-4-14-2-windows.zip "%appdata%\GZDoom"
+		MOVE gzdoom-4-14-2-windows.zip "%localappdata%\GZDoom"
 	) ELSE (
 		ECHO [33m[INFO] gzdoom-4-14-2-windows.zip already exists^^![0m
 	)
 	
 	::extracts gzdoom zip
-	IF EXIST "%appdata%\GZDoom\gzdoom-4-14-2-windows.zip" (
+	IF EXIST "%localappdata%\GZDoom\gzdoom-4-14-2-windows.zip" (
 		ECHO [33m[INFO] Beginning to extract gzdoom-4-14-2-windows.zip...[0m
-		powershell -command "Expand-Archive -Path "%appdata%\GZDoom\gzdoom-4-14-2-windows.zip" -DestinationPath "%appdata%\GZDoom" -Force"
+		powershell -command "Expand-Archive -Path "%localappdata%\GZDoom\gzdoom-4-14-2-windows.zip" -DestinationPath "%localappdata%\GZDoom" -Force"
 		ECHO [33m[INFO] Extraction complete^^![0m
 	
 		::removes zip
 		ECHO [33m[INFO] Removing gzdoom-4-14-2-windows.zip...[0m
-		DEL "%appdata%\GZDoom\gzdoom-4-14-2-windows.zip"
+		DEL "%localappdata%\GZDoom\gzdoom-4-14-2-windows.zip"
 	) ELSE (
 		ECHO [31m[ERROR] Zip not found^^! Download possibly failed or file lost...[0m
 	)
@@ -103,7 +107,7 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom.exe" (
 )
 
 
-IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
+IF NOT EXIST "%localappdata%\GZDoom\gzdoom_portable.ini" (
 	GOTO prompt_config
 ) ELSE (
 	GOTO prompt_new_config
@@ -120,8 +124,8 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 	IF %input%==1 (
 		::downloads and applies my config
 		ECHO [33m[INFO] Attempting StormFifty333's Config download from https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/gzdoom_portable.ini...[0m
-		curl -L -o "%appdata%\GZDoom\gzdoom_portable.ini" https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/stormfifty333config.ini
-		IF EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
+		curl -L -o "%localappdata%\GZDoom\gzdoom_portable.ini" https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/stormfifty333config.ini
+		IF EXIST "%localappdata%\GZDoom\gzdoom_portable.ini" (
 			ECHO [33m[INFO] Config download complete^^![0m
 		) ELSE (
 			ECHO [31m[ERROR] Config not found^^! Download possibly failed or file lost...[0m
@@ -133,8 +137,8 @@ IF NOT EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
 		IF %input%==2 (
 			::downloads and applies the default config
 			ECHO [33m[INFO] Attempting Default Config download from https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/defaultconfig.ini...[0m
-			curl -L -o "%appdata%\GZDoom\gzdoom_portable.ini" https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/defaultconfig.ini
-			IF EXIST "%appdata%\GZDoom\gzdoom_portable.ini" (
+			curl -L -o "%localappdata%\GZDoom\gzdoom_portable.ini" https://raw.githubusercontent.com/StormFifty333/CliGZDoomRunner/refs/heads/main/defaultconfig.ini
+			IF EXIST "%localappdata%\GZDoom\gzdoom_portable.ini" (
 				ECHO [33m[INFO] Config download complete^^![0m
 			) ELSE (
 				ECHO [31m[ERROR] Config not found^^! Download possibly failed or file lost...[0m
@@ -246,52 +250,52 @@ GOTO directory_not_found
 
 :directory_found
 	
-	IF NOT EXIST "%appdata%\GZDoom\DOOM.WAD" (
+	IF NOT EXIST "%localappdata%\GZDoom\DOOM.WAD" (
 		ECHO [33m[INFO] Located Steam DOOM + DOOM II directory at %directory%[0m
 	) ELSE (
-		IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
+		IF NOT EXIST "%localappdata%\GZDoom\DOOM2.WAD" (
 			ECHO [33m[INFO] Located Steam DOOM + DOOM II directory at %directory%[0m
 		) ELSE (
-			ECHO [33m[INFO] DOOM.WAD and DOOM2.WAD found in %appdata%\GZDoom[0m
+			ECHO [33m[INFO] DOOM.WAD and DOOM2.WAD found in %localappdata%\GZDoom[0m
 		)
 	)
 	
-	IF NOT EXIST "%appdata%\GZDoom\DOOM.WAD" (
-		ECHO [33m[INFO] Copying %directory%\DOOM.WAD to %appdata%\GZDoom[0m
-		xcopy %directory%\DOOM.WAD %appdata%\GZDoom
+	IF NOT EXIST "%localappdata%\GZDoom\DOOM.WAD" (
+		ECHO [33m[INFO] Copying %directory%\DOOM.WAD to %localappdata%\GZDoom[0m
+		xcopy %directory%\DOOM.WAD %localappdata%\GZDoom
 	)
 	
-	IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
-		ECHO [33m[INFO] Copying %directory%\doom2\DOOM2.WAD to %appdata%\GZDoom[0m
-		xcopy %directory%\doom2\DOOM2.WAD %appdata%\GZDoom
+	IF NOT EXIST "%localappdata%\GZDoom\DOOM2.WAD" (
+		ECHO [33m[INFO] Copying %directory%\doom2\DOOM2.WAD to %localappdata%\GZDoom[0m
+		xcopy %directory%\doom2\DOOM2.WAD %localappdata%\GZDoom
 	)
 	
-	IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+	IF NOT EXIST "%localappdata%\GZDoom\DOOM1.WAD" (
 		GOTO download_shareware
 	)
-	ECHO [33m[INFO] DOOM1.WAD found in %appdata%\GZDoom[0m
+	ECHO [33m[INFO] DOOM1.WAD found in %localappdata%\GZDoom[0m
 	GOTO pass_shareware_prompt
 
 :directory_not_found
 
-	IF NOT EXIST "%appdata%\GZDoom\DOOM.WAD" (
-		IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
-			ECHO [33m[INFO] Steam DOOM + DOOM II installation not found^^! You can manually install DOOM.WAD and DOOM2.WAD into %appdata%\GZDoom[0m
+	IF NOT EXIST "%localappdata%\GZDoom\DOOM.WAD" (
+		IF NOT EXIST "%localappdata%\GZDoom\DOOM2.WAD" (
+			ECHO [33m[INFO] Steam DOOM + DOOM II installation not found^^! You can manually install DOOM.WAD and DOOM2.WAD into %localappdata%\GZDoom[0m
 		) ELSE (
-			ECHO [33m[INFO] DOOM2.WAD found in %appdata%\GZDoom[0m
+			ECHO [33m[INFO] DOOM2.WAD found in %localappdata%\GZDoom[0m
 		)
 	) ELSE (
-		IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
-			ECHO [33m[INFO] DOOM.WAD found in %appdata%\GZDoom[0m
+		IF NOT EXIST "%localappdata%\GZDoom\DOOM2.WAD" (
+			ECHO [33m[INFO] DOOM.WAD found in %localappdata%\GZDoom[0m
 		) ELSE (
-			ECHO [33m[INFO] DOOM.WAD and DOOM2.WAD found in %appdata%\GZDoom[0m
+			ECHO [33m[INFO] DOOM.WAD and DOOM2.WAD found in %localappdata%\GZDoom[0m
 		)
 	)
 
-	IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+	IF NOT EXIST "%localappdata%\GZDoom\DOOM1.WAD" (
 		GOTO download_shareware
 	)
-	ECHO [33m[INFO] DOOM1.WAD found in %appdata%\GZDoom[0m
+	ECHO [33m[INFO] DOOM1.WAD found in %localappdata%\GZDoom[0m
 	GOTO pass_shareware_prompt
 
 ::prompts user to download shareware wad
@@ -305,8 +309,8 @@ GOTO directory_not_found
 	IF %input%==1 (
 		::downloads shareware wad
 		ECHO [33m[INFO] Attempting DOOM Shareware download from https://distro.ibiblio.org/slitaz/sources/packages/d/doom1.wad...[0m
-		curl -L -o "%appdata%\GZDoom\DOOM1.WAD" https://distro.ibiblio.org/slitaz/sources/packages/d/doom1.wad
-		IF EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+		curl -L -o "%localappdata%\GZDoom\DOOM1.WAD" https://distro.ibiblio.org/slitaz/sources/packages/d/doom1.wad
+		IF EXIST "%localappdata%\GZDoom\DOOM1.WAD" (
 			ECHO [33m[INFO] DOOM Shareware download complete^^![0m
 		) ELSE (
 			ECHO [31m[ERROR] DOOM Shareware not found^^! Download possibly failed or file lost...[0m
@@ -324,19 +328,19 @@ GOTO directory_not_found
 :pass_shareware_prompt
 
 
-IF EXIST "%appdata%\GZDoom\brutalv22test4.pk3" (
-	ECHO [33m[INFO] brutalv22test4.pk3 found in %appdata%\GZDoom[0m
+IF EXIST "%localappdata%\GZDoom\brutalv22test4.pk3" (
+	ECHO [33m[INFO] brutalv22test4.pk3 found in %localappdata%\GZDoom[0m
 	GOTO pass_brutaldoom_prompt
 )
 
-IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
-	ECHO [33m[INFO] brutalv22test4.zip found in %appdata%\GZDoom[0m
+IF EXIST "%localappdata%\GZDoom\brutalv22test4.zip" (
+	ECHO [33m[INFO] brutalv22test4.zip found in %localappdata%\GZDoom[0m
 	GOTO extract_brutaldoom
 )
 
 IF EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
 	ECHO [33m[INFO] brutalv22test4.zip found in %userprofile%\Downloads[0m
-	MOVE "%userprofile%\Downloads\brutalv22test4.zip" "%appdata%\GZDoom"
+	MOVE "%userprofile%\Downloads\brutalv22test4.zip" "%localappdata%\GZDoom"
 	GOTO extract_brutaldoom
 )
 
@@ -352,11 +356,11 @@ IF EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
 		ECHO [33m[INFO] Attempting Brutal DOOM download from https://www.moddb.com/downloads/start/265147?referer=https%3A%2F%2Fwww.moddb.com%2Fmods%2Fbrutal-doom%2Fdownloads...[0m
 		ECHO [33m[INFO] Please wait for download to complete^^![0m
 		start https://www.moddb.com/downloads/start/265147?referer=https%3A%2F%2Fwww.moddb.com%2Fmods%2Fbrutal-doom%2Fdownloads
-		ECHO [33m[INFO] Checking %userprofile%\Downloads and %appdata%\GZDoom for brutalv22test4.zip[0m
+		ECHO [33m[INFO] Checking %userprofile%\Downloads and %localappdata%\GZDoom for brutalv22test4.zip[0m
 		
 		:loop22
 			IF NOT EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
-				IF NOT EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
+				IF NOT EXIST "%localappdata%\GZDoom\brutalv22test4.zip" (
 					GOTO loop22
 				) ELSE (
 					GOTO extract_brutaldoom
@@ -370,13 +374,13 @@ IF EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
 			)
 		
 		IF "%size%"=="148502419" (
-			MOVE "%userprofile%\Downloads\brutalv22test4.zip" "%appdata%\GZDoom"
+			MOVE "%userprofile%\Downloads\brutalv22test4.zip" "%localappdata%\GZDoom"
 			DEL "%userprofile%\Downloads\brutalv22test4.zip"
 		) ELSE (
 			GOTO loop33
 		)
 		
-		IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
+		IF EXIST "%localappdata%\GZDoom\brutalv22test4.zip" (
 			ECHO [33m[INFO] Brutal DOOM download complete^^![0m
 			GOTO extract_brutaldoom
 		)
@@ -392,14 +396,14 @@ IF EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
 
 :extract_brutaldoom
 	::extracts gzdoom zip
-	IF EXIST "%appdata%\GZDoom\brutalv22test4.zip" (
+	IF EXIST "%localappdata%\GZDoom\brutalv22test4.zip" (
 		ECHO [33m[INFO] Beginning to extract brutalv22test4.zip...[0m
-		powershell Expand-Archive -F "%appdata%\GZDoom\brutalv22test4.zip" "%appdata%\GZDoom"
+		powershell Expand-Archive -F "%localappdata%\GZDoom\brutalv22test4.zip" "%localappdata%\GZDoom"
 		ECHO [33m[INFO] Extraction complete^^![0m
 	
 		::removes zip
 		ECHO [33m[INFO] Removing brutalv22test4.zip...[0m
-		DEL "%appdata%\GZDoom\brutalv22test4.zip"
+		DEL "%localappdata%\GZDoom\brutalv22test4.zip"
 		IF EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
 			DEL "%userprofile%\Downloads\brutalv22test4.zip"
 		)
@@ -414,9 +418,9 @@ IF EXIST "%userprofile%\Downloads\brutalv22test4.zip" (
 :pass_brutaldoom_prompt
 
 
-IF EXIST "%appdata%\GZDoom\DOOM.WAD" (
-	IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
-		IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+IF EXIST "%localappdata%\GZDoom\DOOM.WAD" (
+	IF NOT EXIST "%localappdata%\GZDoom\DOOM2.WAD" (
+		IF NOT EXIST "%localappdata%\GZDoom\DOOM1.WAD" (
 			ECHO [33m[INFO] DOOM.WAD selected^^![0m
 			SET selected_wad=DOOM.WAD
 			GOTO pass_wad_select
@@ -425,7 +429,7 @@ IF EXIST "%appdata%\GZDoom\DOOM.WAD" (
 			GOTO select_wad_two2
 		)
 	) ELSE (
-		IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+		IF NOT EXIST "%localappdata%\GZDoom\DOOM1.WAD" (
 			ECHO [33m[INFO] DOOM.WAD and DOOM2.WAD found^^![0m
 			GOTO select_wad_two
 		) ELSE (
@@ -434,8 +438,8 @@ IF EXIST "%appdata%\GZDoom\DOOM.WAD" (
 		)
 	)
 ) ELSE (
-	IF NOT EXIST "%appdata%\GZDoom\DOOM2.WAD" (
-		IF EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+	IF NOT EXIST "%localappdata%\GZDoom\DOOM2.WAD" (
+		IF EXIST "%localappdata%\GZDoom\DOOM1.WAD" (
 			ECHO [33m[INFO] DOOM1.WAD selected^^![0m
 			SET selected_wad=DOOM1.WAD
 			GOTO pass_wad_select
@@ -443,7 +447,7 @@ IF EXIST "%appdata%\GZDoom\DOOM.WAD" (
 			GOTO failed_wad
 		)
 	) ELSE (
-		IF NOT EXIST "%appdata%\GZDoom\DOOM1.WAD" (
+		IF NOT EXIST "%localappdata%\GZDoom\DOOM1.WAD" (
 			ECHO [33m[INFO] DOOM2.WAD selected^^![0m
 			SET selected_wad=DOOM2.WAD
 			GOTO pass_wad_select
@@ -552,7 +556,7 @@ IF EXIST "%appdata%\GZDoom\DOOM.WAD" (
 
 ::if failed to find wad
 :failed_wad
-	ECHO [31m[ERROR] No WAD Found^^! Please buy DOOM + DOOM 2 on Steam, manually drag DOOM.WAD and DOOM2.WAD into %appdata%\GZDoom, or install DOOM Shareware[0m
+	ECHO [31m[ERROR] No WAD Found^^! Please buy DOOM + DOOM 2 on Steam, manually drag DOOM.WAD and DOOM2.WAD into %localappdata%\GZDoom, or install DOOM Shareware[0m
 	GOTO download_shareware
 
 
@@ -564,7 +568,7 @@ IF %selected_wad%==DOOM1.WAD (
 	GOTO pass_mod_select
 )
 
-IF NOT EXIST "%appdata%\GZDoom\brutalv22test4.pk3" (
+IF NOT EXIST "%localappdata%\GZDoom\brutalv22test4.pk3" (
 	SET mod_enabled=false
 	ECHO [33m[INFO] Brutal DOOM not found^^![0m
 	GOTO pass_mod_select
@@ -645,15 +649,15 @@ IF %mod_enabled%==true (
 		
 		IF %multiplayer%==false (
 			IF %mod_enabled%==false (
-				"%appdata%\GZDoom\gzdoom.exe" -iwad "%appdata%\GZDoom\%selected_wad%"
+				"%localappdata%\GZDoom\gzdoom.exe" -iwad "%localappdata%\GZDoom\%selected_wad%"
 			) ELSE (
-				"%appdata%\GZDoom\gzdoom.exe" -iwad "%appdata%\GZDoom\%selected_wad%" -file "%appdata%\GZDoom\%selected_mod%"
+				"%localappdata%\GZDoom\gzdoom.exe" -iwad "%localappdata%\GZDoom\%selected_wad%" -file "%localappdata%\GZDoom\%selected_mod%"
 			)
 		) ELSE (
 			IF %mod_enabled%==false (
-				"%appdata%\GZDoom\gzdoom.exe" -iwad "%appdata%\GZDoom\%selected_wad%" -join %ip%
+				"%localappdata%\GZDoom\gzdoom.exe" -iwad "%localappdata%\GZDoom\%selected_wad%" -join %ip%
 			) ELSE (
-				"%appdata%\GZDoom\gzdoom.exe" -iwad "%appdata%\GZDoom\%selected_wad%" -file "%appdata%\GZDoom\%selected_mod%" -join %ip%
+				"%localappdata%\GZDoom\gzdoom.exe" -iwad "%localappdata%\GZDoom\%selected_wad%" -file "%localappdata%\GZDoom\%selected_mod%" -join %ip%
 			)
 		)
 		
